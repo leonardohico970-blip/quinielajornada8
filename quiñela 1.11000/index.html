@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiniela Oficial — Jornada 8 Apertura 2026</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --pitch:#0B2E21; --pitch-light:#134E38; --chalk:#F8F9FA; --card:#FFFFFF;
+    --gold:#F1C40F; --ink:#1A252C; --muted:#7F8C8D; --line:#E5E8E8;
+    --miss:#C0392B; --hit:#27AE60; --accent:#2980B9;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--chalk); color:var(--ink); font-family:'Inter',sans-serif; }
+  .wrap{max-width:680px;margin:0 auto;padding-bottom:56px;}
+
+  header{
+    background: linear-gradient(135deg, var(--pitch-light) 0%, var(--pitch) 100%);
+    color:#fff; padding:28px 20px; text-align:center; border-bottom:5px solid var(--gold);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .header-content { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+  .header-logo { 
+    width: 110px; height: 110px; object-fit: cover; border-radius: 50%; 
+    border: 3px solid var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.6); 
+    animation: pulseLogo 3s infinite alternate;
+  }
+  .header-qr {
+    width: 110px; height: 110px; background: #fff; padding: 6px; border-radius: 12px;
+    border: 3px solid var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
+  }
+  @keyframes pulseLogo {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.03); }
+  }
+  header h1{font-family:'Oswald',sans-serif; margin:0; font-size:34px; letter-spacing:1px; text-transform: uppercase;}
+  header p{margin:0; font-size:13px; color: var(--gold); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
+
+  .nav-tabs{
+    display:flex; background:#D5DBDB; padding:5px; gap:6px; margin:20px 24px 0; border-radius:12px;
+  }
+  .tab-btn{
+    flex:1; background:transparent; border:none; padding:12px; font-family:'Oswald',sans-serif;
+    font-size:15px; font-weight:600; color:var(--muted); cursor:pointer; border-radius:8px;
+    transition:all 0.3s ease;
+  }
+  .tab-btn.active{ background:var(--card); color:var(--pitch); box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+
+  .tab-content{ display:none; }
+  .tab-content.active{ display:block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .section-title{
+    font-family:'Oswald',sans-serif; font-size:15px; font-weight:600;
+    color:var(--pitch-light); margin:28px 24px 10px; display:flex; align-items:center; gap:10px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .section-title::after{content:""; flex:1; height:2px; background:var(--gold); opacity: 0.6;}
+
+  .name-box{ margin:0 24px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+  .name-box label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight: bold;}
+  .name-box input{ width:100%; border:none; font-family:'Oswald',sans-serif; font-size:20px; color:var(--ink); outline:none; background:transparent;}
+
+  .match{ margin:12px 24px 0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.03);}
+  .match-top{ display:flex; align-items:center; padding:12px 16px 6px; gap:10px;}
+  .team{flex:1; font-weight:700; font-size:15px;}
+  .team.away{text-align:right;}
+  .vs-date{ text-align:center; font-size:11px; color:var(--muted); min-width:85px; line-height:1.2; font-weight: 500;}
+  .match-picks{ display:flex; border-top:1px solid var(--line);}
+  .pick-btn{ flex:1; border:none; background:var(--card); padding:12px 4px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; border-right:1px solid var(--line); transition: background 0.2s;}
+  .pick-btn:hover { background: #EAEDED; color: var(--ink); }
+  .pick-btn:last-child{border-right:none;}
+  .pick-btn.selected{ background:var(--pitch); color:#fff; }
+  .match-picks.locked .pick-btn { pointer-events: none; opacity: 0.6; }
+  .match-picks.locked .pick-btn.selected { opacity: 1; background: var(--pitch); }
+
+  .submit-row{margin:24px 24px 0;}
+  .submit-btn{
+    width:100%; background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%); color:#fff; border:none; border-radius:12px;
+    padding:16px; font-family:'Oswald',sans-serif; font-weight:700; font-size:18px; letter-spacing: 0.5px;
+    cursor:pointer; text-align:center; text-decoration:none; display:block; box-shadow: 0 4px 12px rgba(46,204,113,0.3);
+  }
+
+  .status-msg{ margin:10px 24px 0; font-size:13px; text-align:center; min-height:16px; font-weight:bold;}
+  .status-msg.error{color:var(--miss);}
+  .status-msg.success{color:var(--hit);}
+
+  .board, .results-panel{ margin:0 24px; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03);}
+  .board-scroll{ overflow-x:auto; }
+  table{ border-collapse:collapse; width:100%; font-size:12px; }
+  th,td{ padding:12px 10px; text-align:center; white-space:nowrap; border-bottom:1px solid var(--line); }
+  th{ font-family:'Oswald',sans-serif; color:var(--pitch); background:#EAEDED; font-size:12px;}
+  td.pname{ text-align:left; font-weight:700; color:var(--ink); }
+  td.pts{ font-weight:700; color:var(--pitch); font-size:15px; background:#D5DBDB; }
+  .empty-note{ padding:25px; color:var(--muted); font-size:13px; text-align:center; }
+
+  .pick-cell.hit{ color:var(--hit); font-weight:bold; background:rgba(39,174,96,0.12); }
+  .pick-cell.miss{ color:var(--miss); text-decoration:line-through; opacity:0.6; }
+
+  .download-card-btn {
+    display: block; width: calc(100% - 48px); margin: 20px auto 0; background: linear-gradient(135deg, #2980B9 0%, #3498DB 100%); color: #fff;
+    border: none; border-radius: 12px; padding: 15px; font-family: 'Oswald', sans-serif; font-size: 16px;
+    font-weight: 700; cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(41,128,185,0.3);
+  }
+
+  .admin-box{ margin:0 24px; background:var(--card); border:2px dashed var(--gold); border-radius:12px; padding:20px; }
+  .admin-match-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:13px; gap:8px;}
+  .admin-match-row select{ padding:8px; border-radius:8px; border:1px solid var(--line); font-family:'Inter',sans-serif; background:#F8F9FA;}
+  .admin-save-btn{ margin-top:20px; width:100%; background:var(--pitch); color:#fff; border:none; border-radius:8px; padding:14px; font-family:'Oswald',sans-serif; font-size:16px; cursor:pointer; }
+  .admin-del-user-row{ display:flex; gap:10px; margin-top:20px; }
+  .admin-del-user-row select{ flex:2; padding:10px; border-radius:8px; border:1px solid var(--line); }
+  .admin-del-btn{ flex:1; background:var(--miss); color:#fff; border:none; border-radius:8px; font-family:'Oswald',sans-serif; cursor:pointer; font-weight: bold; }
+
+  #captureCanvasContainer { position: absolute; left: -9999px; top: -9999px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-content">
+      <!-- Imagen incrustada de forma segura en Base64 para evitar errores de ruta -->
+      <img src="data:image/jpeg;base64,[source: 1]" class="header-logo" alt="Logo Quiniela" crossorigin="anonymous">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://verdant-crostata-85a875.netlify.app/" class="header-qr" alt="QR Quiniela" crossorigin="anonymous">
+    </div>
+    <div>
+      <h1>QUINIELA DE FÚTBOL</h1>
+      <p>⚡ Jornada 8 y Extra · Apertura 2026 ⚡</p>
+    </div>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('quiniela', event)">⚽ Hacer Pronóstico</button>
+    <button class="tab-btn" onclick="switchTab('resultados', event)">📊 Resultados y Puntos</button>
+    <button class="tab-btn" onclick="switchTab('admin', event)">🔒 Organizador</button>
+  </div>
+
+  <div id="tab-quiniela" class="tab-content active">
+    <p class="section-title">Tus datos de registro</p>
+    <div class="name-box">
+      <label for="playerName">Tu nombre (Identificador único)</label>
+      <input id="playerName" placeholder="Ej. Carlos Mendoza" autocomplete="off">
+    </div>
+    <div class="name-box" style="margin-top:10px;">
+      <label for="playerPhone">Tu número celular (para evidencia)</label>
+      <input id="playerPhone" placeholder="5545679929" inputmode="tel" autocomplete="off">
+    </div>
+
+    <p class="section-title">Calendario Jornada 8 & Extra (10 Partidos)</p>
+    <div id="matches"></div>
+
+    <div class="submit-row">
+      <a href="#" class="submit-btn" id="saveAndWaBtn">🔥 GUARDAR Y ENVIAR A WHATSAPP</a>
+    </div>
+    <p class="status-msg" id="statusMsg"></p>
+  </div>
+
+  <div id="tab-resultados" class="tab-content">
+    <p class="section-title">Marcadores Oficiales de la Jornada</p>
+    <div class="results-panel" style="padding:16px; margin-bottom:15px;">
+      <div id="liveScoresList" style="font-size:13px;"></div>
+    </div>
+
+    <p class="section-title">Tabla de Posiciones en Tiempo Real</p>
+    <div class="board">
+      <div class="board-scroll">
+        <table id="boardTable"><thead></thead><tbody></tbody></table>
+      </div>
+      <div class="empty-note" id="emptyNote">Aún no hay participantes registrados.</div>
+    </div>
+
+    <button class="download-card-btn" onclick="descargarTarjetaResultados()">📥 Descargar Imagen para WhatsApp</button>
+  </div>
+
+  <div id="tab-admin" class="tab-content">
+    <p class="section-title">Panel Exclusivo del Administrador</p>
+    <div id="adminLoginBox" class="admin-box" style="text-align:center; padding:24px;">
+      <p style="margin-top:0; font-size:14px; font-weight:700;">Ingresa la contraseña de administrador:</p>
+      <input type="password" id="adminPasswordInput" placeholder="Contraseña" style="padding:10px; font-size:16px; border:1px solid var(--line); border-radius:8px; width:220px; text-align:center; margin-bottom:12px;"><br>
+      <button onclick="verifyAdmin()" style="background:var(--pitch); color:#fff; border:none; padding:12px 28px; border-radius:8px; font-family:'Oswald',sans-serif; font-size:16px; cursor:pointer; font-weight: bold;">Entrar al Sistema</button>
+    </div>
+
+    <div id="adminPanelContent" style="display:none;">
+      <div class="admin-box">
+        <p style="margin:0 0 12px; font-size:13px; font-weight:700;">Asignar Resultados Oficiales:</p>
+        <div id="adminMatchRows"></div>
+        <button class="admin-save-btn" id="adminSaveBtn">Guardar Resultados Oficiales</button>
+      </div>
+
+      <div class="admin-box" style="margin-top:20px; border-color:var(--miss);">
+        <p style="margin:0 0 8px; font-size:13px; font-weight:700; color:var(--miss);">Eliminar participante (Solo Admin):</p>
+        <div class="admin-del-user-row">
+          <select id="adminUserSelect"><option value="">Selecciona participante...</option></select>
+          <button class="admin-del-btn" id="adminDelUserBtn">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Contenedor oculto para la tarjeta descargable -->
+<div id="captureCanvasContainer">
+  <div id="shareCard" style="width: 600px; background: #0B2E21; color: #F8F9FA; padding: 30px; font-family: 'Inter', sans-serif; border-radius: 16px; border: 4px solid #F1C40F;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="font-family: 'Oswald', sans-serif; margin: 0; font-size: 30px; color: #fff;">QUINIELA DE FÚTBOL</h2>
+      <p style="margin: 5px 0 0; font-size: 14px; color: #F1C40F; font-weight: bold;">Jornada 8 y Extra · Tabla de Posiciones</p>
+    </div>
+    <div id="shareCardBody" style="background: #FFFFFF; color: #1A252C; border-radius: 10px; padding: 15px; overflow: hidden;"></div>
+    <div style="text-align: center; margin-top: 15px; font-size: 11px; opacity: 0.8; color: #ECF0F1;">
+      ¡Consulta tus pronósticos y resultados en tiempo real! ⚽🔥
+    </div>
+  </div>
+</div>
+
+<script>
+const MATCHES = [
+  {id:"m1", h:"Necaxa", a:"Puebla", d:"Vie 11/sep · 7:00 PM"},
+  {id:"m2", h:"Atlante", a:"Pachuca", d:"Vie 11/sep · 9:00 PM"},
+  {id:"m3", h:"Tijuana", a:"Querétaro", d:"Vie 11/sep · 9:00 PM"},
+  {id:"m4", h:"Toluca", a:"Atlas", d:"Sáb 12/sep · 5:00 PM"},
+  {id:"m5", h:"Monterrey", a:"Tigres", d:"Sáb 12/sep · 7:00 PM"},
+  {id:"m6", h:"Cruz Azul", a:"América", d:"Sáb 12/sep · 9:00 PM"},
+  {id:"m7", h:"Santos", a:"FC Juárez", d:"Dom 13/sep · 6:00 PM"},
+  {id:"m8", h:"Chivas", a:"Pumas", d:"Dom 13/sep · 7:07 PM"},
+  {id:"m9", h:"Sevilla FC", a:"Valencia CF", d:"Dom 13/sep · 9:30 AM"},
+  {id:"m10", h:"Man. United", a:"Man. City", d:"Dom 13/sep · 9:30 AM"}
+];
+
+const STORAGE_PICKS_KEY = "quiniela_registros_j8_v14";
+const STORAGE_RESULTS_KEY = "quiniela_resultados_j8_v14";
+const ORGANIZER_PHONE = "5215545679929";
+const ADMIN_PASS = "Verxico2026#";
+
+let currentPicks = {};
+let allPicks = {};
+let officialResults = {}; 
+
+const playerNameInput = document.getElementById("playerName");
+const playerPhoneInput = document.getElementById("playerPhone");
+const matchesEl = document.getElementById("matches");
+const statusMsg = document.getElementById("statusMsg");
+const boardTable = document.getElementById("boardTable");
+const emptyNote = document.getElementById("emptyNote");
+const liveScoresList = document.getElementById("liveScoresList");
+const adminMatchRows = document.getElementById("adminMatchRows");
+
+function switchTab(tabId, evt) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+  if(tabId === 'resultados') renderLiveScoresAndBoard();
+  if(tabId === 'admin') renderAdminUserSelect();
+}
+
+function verifyAdmin(){
+  const pass = document.getElementById("adminPasswordInput").value;
+  if(pass === ADMIN_PASS){
+    document.getElementById("adminLoginBox").style.display = "none";
+    document.getElementById("adminPanelContent").style.display = "block";
+    renderAdminRows();
+    renderAdminUserSelect();
+  } else {
+    alert("Contraseña incorrecta.");
+  }
+}
+
+function renderMatches(locked = false){
+  matchesEl.innerHTML = MATCHES.map(m => `
+    <div class="match">
+      <div class="match-top">
+        <div class="team home">${m.h}</div>
+        <div class="vs-date">${m.d}</div>
+        <div class="team away">${m.a}</div>
+      </div>
+      <div class="match-picks ${locked ? 'locked' : ''}">
+        <button class="pick-btn" data-m="${m.id}" data-p="L">LOCAL</button>
+        <button class="pick-btn" data-m="${m.id}" data-p="E">EMPATE</button>
+        <button class="pick-btn" data-m="${m.id}" data-p="V">VISITA</button>
+      </div>
+    </div>
+  `).join("");
+
+  if(!locked){
+    matchesEl.querySelectorAll(".pick-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mId = btn.dataset.m;
+        currentPicks[mId] = btn.dataset.p;
+        matchesEl.querySelectorAll(`.pick-btn[data-m="${mId}"]`).forEach(b => {
+          b.classList.toggle("selected", b.dataset.p === currentPicks[mId]);
+        });
+      });
+    });
+  }
+}
+
+function renderAdminRows(){
+  adminMatchRows.innerHTML = MATCHES.map(m => `
+    <div class="admin-match-row">
+      <span><b>${m.h}</b> vs <b>${m.a}</b></span>
+      <select data-m="${m.id}">
+        <option value="">Pendiente</option>
+        <option value="L" ${officialResults[m.id]==='L'?'selected':''}>Ganó ${m.h} (Local)</option>
+        <option value="E" ${officialResults[m.id]==='E'?'selected':''}>Empate</option>
+        <option value="V" ${officialResults[m.id]==='V'?'selected':''}>Ganó ${m.a} (Visita)</option>
+      </select>
+    </div>
+  `).join("");
+}
+
+function renderAdminUserSelect(){
+  const select = document.getElementById("adminUserSelect");
+  const names = Object.keys(allPicks);
+  select.innerHTML = '<option value="">Selecciona participante...</option>' + names.map(n => `<option value="${n}">${n}</option>`).join("");
+}
+
+function loadData(){
+  const pData = localStorage.getItem(STORAGE_PICKS_KEY);
+  if(pData) { try { allPicks = JSON.parse(pData); } catch(e){ allPicks = {}; } }
+  
+  const rData = localStorage.getItem(STORAGE_RESULTS_KEY);
+  if(rData) { try { officialResults = JSON.parse(rData); } catch(e){ officialResults = {}; } }
+
+  renderAdminRows();
+  renderLiveScoresAndBoard();
+}
+
+function renderLiveScoresAndBoard(){
+  liveScoresList.innerHTML = MATCHES.map(m => {
+    const res = officialResults[m.id];
+    let resBadge = `<span style="color:var(--muted); background:#EAEDED; padding:3px 8px; border-radius:4px; font-size:11px;">En juego / Pendiente</span>`;
+    if(res === 'L') resBadge = `<span style="color:#fff; background:var(--hit); padding:3px 8px; border-radius:4px; font-size:11px; font-weight:bold;">Ganó Local (${m.h})</span>`;
+    if(res === 'E') resBadge = `<span style="color:#fff; background:var(--gold); padding:3px 8px; border-radius:4px; font-size:11px; font-weight:bold;">Empate</span>`;
+    if(res === 'V') resBadge = `<span style="color:#fff; background:var(--miss); padding:3px 8px; border-radius:4px; font-size:11px; font-weight:bold;">Ganó Visita (${m.a})</span>`;
+
+    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line);">
+      <span><b>${m.h}</b> vs <b>${m.a}</b></span>
+      ${resBadge}
+    </div>`;
+  }).join("");
+
+  const names = Object.keys(allPicks);
+  if(names.length === 0){
+    boardTable.querySelector("thead").innerHTML = "";
+    boardTable.querySelector("tbody").innerHTML = "";
+    emptyNote.style.display = "block";
+    return;
+  }
+  emptyNote.style.display = "none";
+
+  const headCells = [`<th style="text-align:left;">Participante</th>`]
+    .concat(MATCHES.map(m => `<th>${m.h.slice(0,3)} vs ${m.a.slice(0,3)}</th>`))
+    .concat([`<th>Puntos</th>`]);
+  boardTable.querySelector("thead").innerHTML = `<tr>${headCells.join("")}</tr>`;
+
+  const rowsData = names.map(name => {
+    const userObj = allPicks[name];
+    let score = 0;
+    const cells = MATCHES.map(m => {
+      const pick = userObj.picks[m.id] || "—";
+      const official = officialResults[m.id];
+      let cellClass = "";
+      if(official){
+        if(pick === official) { cellClass = "hit"; score++; }
+        else { cellClass = "miss"; }
+      }
+      return `<td class="${cellClass}">${pick}</td>`;
+    }).join("");
+    return {name, cells, score};
+  });
+
+  rowsData.sort((a,b) => b.score - a.score);
+
+  const tbodyHtml = rowsData.map(r => `
+    <tr>
+      <td class="pname">${r.name}</td>
+      ${r.cells}
+      <td class="pts">${r.score} pts</td>
+    </tr>
+  `).join("");
+
+  boardTable.querySelector("tbody").innerHTML = tbodyHtml;
+  
+  document.getElementById("shareCardBody").innerHTML = `
+    <table style="width:100%; border-collapse:collapse; font-size:11px;">
+      <thead><tr>${headCells.join("")}</tr></thead>
+      <tbody>${tbodyHtml}</tbody>
+    </table>
+  `;
+}
+
+function descargarTarjetaResultados() {
+  const card = document.getElementById("shareCard");
+  html2canvas(card, { scale: 2, useCORS: true }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'Quiniela_Resultados_J8.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+playerNameInput.addEventListener("input", () => {
+    const nameToFind = playerNameInput.value.trim();
+    statusMsg.textContent = "";
+    statusMsg.className = "status-msg";
+
+    if(allPicks[nameToFind]){
+        const userData = allPicks[nameToFind];
+        playerPhoneInput.value = userData.phone;
+        currentPicks = {...userData.picks};
+        
+        renderMatches(true);
+
+        Object.keys(currentPicks).forEach(mId => {
+            const btn = matchesEl.querySelectorAll(`.pick-btn[data-m="${mId}"]`);
+            const correctBtn = Array.from(btn).find(b => b.dataset.p === currentPicks[mId]);
+            if(correctBtn) correctBtn.classList.add("selected");
+        });
+        
+        statusMsg.textContent = "Este nombre ya está registrado y sus pronósticos están bloqueados.";
+        statusMsg.className = "status-msg error";
+        document.getElementById("saveAndWaBtn").style.display = "none";
+    } else {
+        playerPhoneInput.value = "";
+        currentPicks = {};
+        renderMatches(false);
+        document.getElementById("saveAndWaBtn").style.display = "block";
+    }
+});
+
+document.getElementById("saveAndWaBtn").addEventListener("click", (e) => {
+  const name = playerNameInput.value.trim();
+  const phone = playerPhoneInput.value.trim();
+  statusMsg.textContent = "";
+
+  if(!name || !phone){
+    statusMsg.textContent = "¡Falta tu nombre o número celular!";
+    statusMsg.className = "status-msg error";
+    e.preventDefault();
+    return;
+  }
+  if(Object.keys(currentPicks).length < MATCHES.length){
+    statusMsg.textContent = "¡Faltan partidos por pronosticar!";
+    statusMsg.className = "status-msg error";
+    e.preventDefault();
+    return;
+  }
+
+  allPicks[name] = { phone: phone, picks: {...currentPicks} };
+  localStorage.setItem(STORAGE_PICKS_KEY, JSON.stringify(allPicks));
+  
+  renderLiveScoresAndBoard();
+  renderMatches(true); 
+  
+  Object.keys(currentPicks).forEach(mId => {
+      const btn = matchesEl.querySelectorAll(`.pick-btn[data-m="${mId}"]`);
+      const correctBtn = Array.from(btn).find(b => b.dataset.p === currentPicks[mId]);
+      if(correctBtn) correctBtn.classList.add("selected");
+  });
+
+  document.getElementById("saveAndWaBtn").style.display = "none";
+
+  let mensaje = `*--- QUINIELA DE FÚTBOL (J8) ---*\n👤 Nombre: ${name}\n📱 Celular: ${phone}\n\n*--- PRONÓSTICOS ---*\n`;
+  const labelMap = {L:"LOCAL", E:"EMPATE", V:"VISITA"};
+  MATCHES.forEach((m, i) => {
+    mensaje += `${i+1}. ${m.h} vs ${m.a}: ${labelMap[currentPicks[m.id]]}\n`;
+  });
+
+  const waUrl = `https://wa.me/${ORGANIZER_PHONE}?text=` + encodeURIComponent(mensaje);
+  document.getElementById("saveAndWaBtn").href = waUrl;
+
+  statusMsg.textContent = "¡Guardado con éxito! Pronósticos bloqueados.";
+  statusMsg.className = "status-msg success";
+});
+
+document.getElementById("adminSaveBtn").addEventListener("click", () => {
+  const selects = adminMatchRows.querySelectorAll("select");
+  selects.forEach(s => {
+    const mId = s.dataset.m;
+    if(s.value) officialResults[mId] = s.value;
+    else delete officialResults[mId];
+  });
+  localStorage.setItem(STORAGE_RESULTS_KEY, JSON.stringify(officialResults));
+  renderLiveScoresAndBoard();
+  alert("¡Resultados oficiales guardados y visibles para todos!");
+  switchTab('resultados');
+});
+
+document.getElementById("adminDelUserBtn").addEventListener("click", () => {
+  const userToDel = document.getElementById("adminUserSelect").value;
+  if(!userToDel) {
+    alert("Selecciona un participante.");
+    return;
+  }
+  if(confirm(`¿Estás seguro de eliminar el registro de "${userToDel}"?`)){
+    delete allPicks[userToDel];
+    localStorage.setItem(STORAGE_PICKS_KEY, JSON.stringify(allPicks));
+    renderAdminUserSelect();
+    renderLiveScoresAndBoard();
+    playerNameInput.value = "";
+    playerPhoneInput.value = "";
+    renderMatches(false);
+    document.getElementById("saveAndWaBtn").style.display = "block";
+    alert(`El registro de "${userToDel}" ha sido eliminado.`);
+  }
+});
+
+renderMatches(false);
+loadData();
+</script>
+</body>
+</html>
